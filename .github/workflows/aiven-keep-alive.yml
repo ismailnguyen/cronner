@@ -22,10 +22,8 @@ jobs:
           echo "Making API request to: https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE"
           RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" \
                     "https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE")
-          echo "Full API response: $RESPONSE"
           STATE=$(echo "$RESPONSE" | jq -r '.service.state // "UNKNOWN"')
           echo "state=$STATE" >> "$GITHUB_OUTPUT"
-          echo "Current service state: $STATE"
 
       - name: Power on if needed
         if: steps.status.outputs.state == 'POWEROFF'
@@ -35,7 +33,6 @@ jobs:
                -H "Content-Type: application/json" \
                -d '{"powered":true}' \
                "https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE")
-          echo "Power-on API response: $POWER_RESPONSE"
 
       - name: Done
         run: 'echo "Finished with current state: ${{ steps.status.outputs.state }}"'
