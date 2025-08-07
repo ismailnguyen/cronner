@@ -23,6 +23,7 @@ jobs:
                  "https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE" \
                  | jq -r '.state')
           echo "state=$STATE" >> "$GITHUB_OUTPUT"
+          echo "Current service state: $STATE"
 
       - name: Power on if needed
         if: steps.status.outputs.state == 'POWEROFF'
