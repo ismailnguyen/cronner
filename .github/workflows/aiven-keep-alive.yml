@@ -3,7 +3,7 @@ name: Keep Aiven free-tier DB awake
 # Every day at 04:00 UTC (≈ 06:00 CET / 07:00 CEST)
 on:
   schedule:
-    - cron: '0 4 * * *'
+    - cron: "0 4 * * *"
   workflow_dispatch:        # allow manual runs too
 
 jobs:
@@ -34,4 +34,4 @@ jobs:
                "https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE"
 
       - name: Done
-        run: echo "✅  Finished – current state: ${{ steps.status.outputs.state }}"
+        run: 'echo "Finished with current state: ${{ steps.status.outputs.state }}"'
