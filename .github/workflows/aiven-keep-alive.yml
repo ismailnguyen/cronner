@@ -31,10 +31,11 @@ jobs:
         if: steps.status.outputs.state == 'POWEROFF'
         run: |
           echo "Service is off – powering on…"
-          curl -s -X PUT -H "Authorization: Bearer $TOKEN" \
+          POWER_RESPONSE=$(curl -s -X PUT -H "Authorization: Bearer $TOKEN" \
                -H "Content-Type: application/json" \
                -d '{"powered":true}' \
-               "https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE"
+               "https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE")
+          echo "Power-on API response: $POWER_RESPONSE"
 
       - name: Done
         run: 'echo "Finished with current state: ${{ steps.status.outputs.state }}"'
