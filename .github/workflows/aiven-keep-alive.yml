@@ -19,7 +19,6 @@ jobs:
       - name: Check current service state
         id: status
         run: |
-          echo "Making API request to: https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE"
           RESPONSE=$(curl -s -H "Authorization: Bearer $TOKEN" \
                     "https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE")
           STATE=$(echo "$RESPONSE" | jq -r '.service.state // "UNKNOWN"')
