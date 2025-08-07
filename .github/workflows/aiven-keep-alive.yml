@@ -1,0 +1,37 @@
+name: Keep Aiven free-tier DB awake
+
+# Every day at 04:00 UTC (≈ 06:00 CET / 07:00 CEST)
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:        # allow manual runs too
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+
+    env:
+      TOKEN:   ${{ secrets.AIVEN_TOKEN }}
+      PROJECT: ${{ secrets.AIVEN_PROJECT }}
+      SERVICE: ${{ secrets.AIVEN_SERVICE }}
+
+    steps:
+      - name: Check current service state
+        id: status
+        run: |
+          STATE=$(curl -s -H "Authorization: Bearer $TOKEN" \
+                 "https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE" \
+                 | jq -r '.state')
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+
+      - name: Power on if needed
+        if: steps.status.outputs.state == 'POWEROFF'
+        run: |
+          echo "Service is off – powering on…"
+          curl -s -X PUT -H "Authorization: Bearer $TOKEN" \
+               -H "Content-Type: application/json" \
+               -d '{"powered":true}' \
+               "https://api.aiven.io/v1/project/$PROJECT/service/$SERVICE"
+
+      - name: Done
+        run: echo "✅  Finished – current state: ${{ steps.status.outputs.state }}"
